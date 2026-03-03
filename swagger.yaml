@@ -1,0 +1,144 @@
+swagger: "2.0"
+
+info:
+  title: Urban Myth & Folklore API
+  description: REST API for submitting and voting on urban myths.
+  version: "1.0"
+
+host: localhost:5000
+basePath: /
+
+schemes:
+  - http
+
+securityDefinitions:
+  BearerAuth:
+    type: apiKey
+    name: Authorization
+    in: header
+    description: "Enter: Bearer <your_token>"
+
+paths:
+
+  /auth/register:
+    post:
+      tags:
+        - Authentication
+      summary: Register a new user
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            type: object
+            required:
+              - username
+              - email
+              - password
+            properties:
+              username:
+                type: string
+                example: johndoe
+              email:
+                type: string
+                example: john@example.com
+              password:
+                type: string
+                example: mypassword123
+      responses:
+        201:
+          description: User created successfully
+        400:
+          description: Invalid input
+
+  /auth/login:
+    post:
+      tags:
+        - Authentication
+      summary: Login user and return JWT
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            type: object
+            required:
+              - email
+              - password
+            properties:
+              email:
+                type: string
+                example: john@example.com
+              password:
+                type: string
+                example: mypassword123
+      responses:
+        200:
+          description: JWT token returned
+        401:
+          description: Invalid credentials
+
+  /myths:
+    get:
+      tags:
+        - Myths
+      summary: List all myths
+      produces:
+        - application/json
+      responses:
+        200:
+          description: List of myths
+
+    post:
+      tags:
+        - Myths
+      summary: Submit a new myth
+      security:
+        - BearerAuth: []
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          required: true
+          schema:
+            type: object
+            required:
+              - title
+              - description
+              - category
+              - latitude
+              - longitude
+            properties:
+              title:
+                type: string
+                example: The Vanishing Hitchhiker
+              description:
+                type: string
+                example: A mysterious hitchhiker disappears from a moving car.
+              category:
+                type: string
+                example: Urban Legend
+              latitude:
+                type: number
+                example: 40.7128
+              longitude:
+                type: number
+                example: -74.0060
+      responses:
+        201:
+          description: Myth created
+        401:
+          description: Unauthorized
+        403:
+          description: Forbidden
